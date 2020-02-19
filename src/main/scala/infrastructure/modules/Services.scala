@@ -1,7 +1,6 @@
 package infrastructure.modules
 
-import cats.Parallel
-import cats.effect.{Concurrent, Sync, Timer}
+import cats.effect.Sync
 import core.StudentService
 import cats.implicits._
 
