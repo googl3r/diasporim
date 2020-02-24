@@ -1,7 +1,7 @@
 package units
 
 import cats.effect.IO
-import core.{CreateStudentCommand, Email, EmailInUse, EmailInvalidError, Name, NameInvalidError, Student, StudentId, StudentInvalidError, StudentRepository, StudentService}
+import core.{CreateStudentCommand, Email, EmailInUse, EmailInvalidError, NameInvalidError, Student, StudentId, StudentInvalidError, StudentRepository, StudentService}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

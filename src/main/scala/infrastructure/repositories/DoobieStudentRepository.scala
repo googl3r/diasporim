@@ -11,7 +11,7 @@ class DoobieStudentRepository[F[_]: Bracket[?[_], Throwable]](val tx: Transactor
 extends StudentRepository[F]{
 
   override def findByEmail(email: Email): F[Option[Student]] =
-    sqlFindByEmail(email).map(studentEntity => StudentEntity.toStudent(studentEntity)).unique.transact(tx)
+    sqlFindByEmail(email).map(studentEntity => StudentEntity.toStudent(studentEntity)).option.transact(tx)
 
   override def create(student: Student): F[StudentId] =
     sqlCreateStudent(StudentEntity.fromStudent(student))
@@ -39,7 +39,7 @@ extends StudentRepository[F]{
   implicit val emailMeta: Meta[Email] = Meta[String].timap(email => Email.unsafeEmail(email))(email => email.value)*/
 }
 object DoobieStudentRepository {
-  def make[F[_]: Sync: Bracket[?[_], Throwable]](tx: Transactor[F]): F[DoobieStudentRepository[F]] =
+  def make[F[_]: Sync](tx: Transactor[F]): F[DoobieStudentRepository[F]] =
     Sync[F].delay(
       new DoobieStudentRepository[F](tx)
     )

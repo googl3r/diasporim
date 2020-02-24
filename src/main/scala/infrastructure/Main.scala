@@ -28,9 +28,10 @@ object Main extends IOApp {
   val confFile: IO[DiasporimConfig] = parser.decodePathF[IO, DiasporimConfig]("diasporim")
 
   val transactor: Resource[IO, HikariTransactor[IO]] = for {
-    conf <- Resource.liftF(confFile)
+    conf          <- Resource.liftF(confFile)
     threadPool    <- ExecutionContexts.fixedThreadPool[IO](32)
-    cachedThread  <- ExecutionContexts.cachedThreadPool[IO]
-    tx            <- DatabaseConfig.databaseTransactor[IO](conf.db, threadPool, Blocker.liftExecutionContext(cachedThread))
+    be            <- Blocker[IO]
+    tx            <- DatabaseConfig.databaseTransactor[IO](conf.db, threadPool,
+      be)
   } yield tx
 }
