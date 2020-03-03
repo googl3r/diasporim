@@ -2,10 +2,10 @@ package infrastructure.modules
 
 import cats.Parallel
 import cats.effect.{Concurrent, Sync, Timer}
-import core.StudentRepository
 import doobie.util.transactor.Transactor
 import infrastructure.repositories.DoobieStudentRepository
 import cats.implicits._
+import core.domain.StudentRepository
 
 object Repositories {
   def make[F[_]: Concurrent: Parallel: Timer](tx: Transactor[F]): F[Repositories[F]] = for {

@@ -1,7 +1,8 @@
 package units
 
 import cats.effect.IO
-import core.{CreateStudentCommand, Email, EmailInUse, EmailInvalidError, NameInvalidError, Student, StudentId, StudentInvalidError, StudentRepository, StudentService}
+import core.domain.{Email, EmailInUse, EmailInvalidError, NameInvalidError, Student, StudentId, StudentRepository}
+import core.usecases.{CreateStudent, StudentService}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -10,40 +11,38 @@ class CreateStudentSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll
   "Student creation" should {
     val name = "pouulo"
     val email = "pouulodia@gmail.com"
-    " not create Invalid student" should {
+    " should not create an invalid student" should {
       val invalidName = ""
       val invalidEmail = "pouulodiagmail.com"
       val studentRepository = new StudentTestRepository
       val studentService = new StudentService(studentRepository)
 
-      "shouldn't create a student when name is invalid" in {
-        val createStudentCommand = CreateStudentCommand(invalidName, email)
+          "when student name is invalid" in {
+            val studentToCreate = CreateStudent(invalidName, email)
 
-        studentService.create(createStudentCommand)
-          .attempt
-          .map {
-            case Left(StudentInvalidError(list)) => assert(list.size == 1 &&
-              list.head == NameInvalidError("student name is invalid"))
-            case _ => fail("impossible to create a student with an invalid name")
-          }.unsafeRunSync()
-      }
+            studentService.create(studentToCreate)
+              .attempt
+              .map {
+                case Left(error) => assert(error == NameInvalidError("student name is invalid"))
+                case _ => fail("impossible to create a student with an invalid name")
+              }.unsafeRunSync()
+          }
 
-      "shouldn't create a student with an invalid email" in {
-        val createStudentCommand = CreateStudentCommand(name, invalidEmail)
+          "when student email is invalid" in {
+            val studentToCreate = CreateStudent(name, invalidEmail)
 
-        studentService.create(createStudentCommand)
-          .attempt
-          .map {
-            case Left(StudentInvalidError(list)) => assert(list.size == 1 &&
-              list.head == EmailInvalidError("student email is invalid"))
-            case _ => fail("impossible to create a student with an invalid email")
-          }.unsafeRunSync()
+            studentService.create(studentToCreate)
+              .attempt
+              .map {
+                case Left(error) => assert(error == EmailInvalidError("student email is invalid"))
+                case _ => fail("impossible to create a student with an invalid email")
+              }.unsafeRunSync()
 
-      }
+          }
     }
 
     "shouldn't create a student with an email in use" in {
-      val studentToCreate = CreateStudentCommand(name, email)
+      val studentToCreate = CreateStudent(name, email)
       val studentRepository: StudentRepository[IO] = new StudentTestRepository {
         override def findByEmail(email: Email): IO[Option[Student]] = IO.pure(Student.createStudent("123", name, email.value).toOption)
       }
@@ -61,7 +60,7 @@ class CreateStudentSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll
       val studentRepository = new StudentTestRepository {
         override def create(student: Student): IO[StudentId] = IO.pure(StudentId.fromString("123").toOption.get)
       }
-      val studentToCreate = CreateStudentCommand(name, email)
+      val studentToCreate = CreateStudent(name, email)
       val studentService = new StudentService(studentRepository)
 
       studentService.create(studentToCreate)

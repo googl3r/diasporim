@@ -1,6 +1,6 @@
 package infrastructure.entities
 
-import core.Student
+import core.domain.Student
 
 case class StudentEntity(studentId: String,
                          name: String,

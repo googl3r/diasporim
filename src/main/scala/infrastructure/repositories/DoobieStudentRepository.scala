@@ -2,6 +2,7 @@ package infrastructure.repositories
 
 import cats.effect.{Bracket, Sync}
 import core._
+import core.domain.{Email, Student, StudentId, StudentRepository}
 import doobie._
 import doobie.implicits._
 import doobie.util.transactor.Transactor

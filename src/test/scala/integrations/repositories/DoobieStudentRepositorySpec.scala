@@ -1,7 +1,7 @@
 package integrations.repositories
 
 import cats.effect.IO
-import core.{Email, Name, Student, StudentId}
+import core.domain.{Email, Student}
 import doobie.implicits._
 import infrastructure.repositories.DoobieStudentRepository
 import integrations.testTransactor

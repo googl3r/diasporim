@@ -2,7 +2,7 @@ package infrastructure.modules
 
 import cats.{MonadError, Parallel}
 import cats.effect.{Concurrent, Sync, Timer}
-import core.StudentService
+import core.usecases.StudentService
 
 object Services {
   def make[F[_]: Concurrent: Parallel: Timer](repositories: Repositories[F])
