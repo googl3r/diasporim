@@ -1,11 +1,12 @@
 package infrastructure.modules
 
 import cats.effect.{Concurrent, Sync, Timer}
-import infrastructure.rest.StudentRoutes
+import infrastructure.rest.student.StudentRoutes
 import org.http4s.{HttpApp, HttpRoutes}
 import org.http4s.server.middleware.{AutoSlash, CORS, RequestLogger, ResponseLogger, Timeout}
 import org.http4s.implicits._
 import org.http4s.server.Router
+
 import scala.concurrent.duration._
 
 object HttpApi {

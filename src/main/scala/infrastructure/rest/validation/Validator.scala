@@ -1,4 +1,4 @@
-package infrastructure.rest
+package infrastructure.rest.validation
 
 import cats.data.NonEmptyList
 import cats.implicits._
@@ -11,9 +11,9 @@ trait FieldValidator[T] {
 }
 case object NotEmpty extends FieldValidator[String] {
   override def validate(field: String, fieldName: String): Option[NonEmptyList[FieldError]] =
-    if (field.isEmpty) NonEmptyList.of(FieldError(fieldName, "must not be empty")).some else None
+    if (field == null || field.isEmpty) NonEmptyList.of(FieldError(fieldName, "must not be empty")).some else None
 }
 case object EmailValidation extends FieldValidator[String] {
   override def validate(field: String, fieldName: String): Option[NonEmptyList[FieldError]] =
-    if(!field.contains("@")) NonEmptyList.of(FieldError(fieldName, "must contains an @")).some else None
+    if(field == null || !field.contains("@")) NonEmptyList.of(FieldError(fieldName, "must contains an @")).some else None
 }

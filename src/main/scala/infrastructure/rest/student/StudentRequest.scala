@@ -1,4 +1,6 @@
-package infrastructure.rest
+package infrastructure.rest.student
+
+import infrastructure.rest.validation.{EmailValidation, NotEmpty, Validator}
 
 case class StudentRequest(name: String, email: String)
 

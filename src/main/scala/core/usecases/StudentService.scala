@@ -5,12 +5,16 @@ import java.util.UUID
 import cats.MonadError
 import cats.effect.Sync
 import cats.implicits._
+import core.UUIDGenerator
 import core.domain._
 
-final class StudentService[F[_]](studentRepository: StudentRepository[F])(implicit me: MonadError[F, Throwable]) {
+final class StudentService[F[_]: UUIDGenerator](studentRepository: StudentRepository[F])(implicit me: MonadError[F, Throwable]) {
   def create(studentToCreate: CreateStudent): F[StudentId] = {
-    val student = Student.createStudent(UUID.randomUUID().toString, studentToCreate.name, studentToCreate.email)
-    student match {
+    val student = for {
+      uuid <- UUIDGenerator[F].make
+    } yield Student.createStudent(uuid.toString, studentToCreate.name, studentToCreate.email)
+
+    student.flatMap {
       case Right(value) => studentRepository.findByEmail(value.email)
         .flatMap {
           case Some(_) => me.raiseError(EmailInUse(value.email))
