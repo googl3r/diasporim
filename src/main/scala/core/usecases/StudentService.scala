@@ -1,6 +1,5 @@
 package core.usecases
 
-import java.util.UUID
 
 import cats.MonadError
 import cats.effect.Sync

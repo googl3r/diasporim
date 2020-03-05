@@ -2,11 +2,11 @@ package infrastructure.rest.student
 
 import infrastructure.rest.validation.{EmailValidation, NotEmpty, Validator}
 
-case class StudentRequest(name: String, email: String)
+case class CreateStudentRequest(name: String, email: String)
 
-object StudentRequest {
+object CreateStudentRequest {
   import cats.implicits._
-  implicit val validator: Validator[StudentRequest] = (studentRequest: StudentRequest) => {
+  implicit val validator: Validator[CreateStudentRequest] = (studentRequest: CreateStudentRequest) => {
     NotEmpty.validate(studentRequest.name, "name") |+|
       EmailValidation.validate(studentRequest.email, "email")
   }

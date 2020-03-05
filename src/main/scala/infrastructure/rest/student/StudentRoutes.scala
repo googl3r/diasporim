@@ -15,13 +15,13 @@ class StudentRoutes[F[_]: Sync](studentService: StudentService[F]) extends Http4
 
   private val studentRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
     case req @ POST -> Root =>
-      req.decode[StudentRequest]{
-        studentRequest => StudentRequest.validator.validate(studentRequest) match {
+      req.decode[CreateStudentRequest]{
+        studentRequest => CreateStudentRequest.validator.validate(studentRequest) match {
           case Some(errors) => BadRequest(errors)
           case None => studentService.create(CreateStudent(studentRequest.name, studentRequest.email))
-              .flatMap(stdId => Created(Json.obj(("id", Json.fromString(stdId.value)))))
+              .flatMap(stdId => Created(CreateStudentResponse(stdId.value)))
               .handleErrorWith {
-                case EmailInUse(e) => Conflict(e.value)
+                case EmailInUse(e) => Conflict(ErrorMessage("Email-In-Use", s"${e.value} is already used by another user"))
               }
         }
       }
