@@ -1,3 +1,3 @@
 package core.usecases
 
-case class CreateStudent(name: String, email: String)
+case class CreateStudentCommand(name: String, email: String)

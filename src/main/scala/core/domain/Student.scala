@@ -1,6 +1,5 @@
 package core.domain
 
-import java.util.UUID
 
 
 import scala.util.control.NoStackTrace

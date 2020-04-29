@@ -8,7 +8,7 @@ import core.UUIDGenerator
 import core.domain._
 
 final class StudentService[F[_]: UUIDGenerator](studentRepository: StudentRepository[F])(implicit me: MonadError[F, Throwable]) {
-  def create(studentToCreate: CreateStudent): F[StudentId] = {
+  def create(studentToCreate: CreateStudentCommand): F[StudentId] = {
     val student = for {
       uuid <- UUIDGenerator[F].make
     } yield Student.createStudent(uuid.toString, studentToCreate.name, studentToCreate.email)

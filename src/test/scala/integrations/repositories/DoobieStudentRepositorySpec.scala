@@ -11,6 +11,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class DoobieStudentRepositorySpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
     def transactor: doobie.Transactor[IO] = testTransactor
+  val studentToCreate = Student.createStudent("123", "pouulo", "pouulodia@gmail.com")
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
@@ -20,16 +21,13 @@ class DoobieStudentRepositorySpec extends AnyWordSpec with Matchers with BeforeA
 
   "DoobieStudentRepository " should {
     "create a student in the database" in {
-      val studentToCreate = Student.createStudent("123", "pouulo", "pouulodia@gmail.com")
       val studentRepository = new DoobieStudentRepository[IO](transactor)
       val studentId = studentRepository.create(studentToCreate.toOption.get).unsafeRunSync()
-
 
       studentId.value should equal("123")
     }
     "find a student by email" in {
       val email = "pouulodia@gmail.com"
-      val studentToCreate = Student.createStudent("123", "pouulo", email)
       val studentRepository = new DoobieStudentRepository[IO](transactor)
       val result = studentRepository.create(studentToCreate.toOption.get)
         .flatMap(_ => studentRepository.findByEmail(Email.fromString(email).toOption.get)).unsafeRunSync()

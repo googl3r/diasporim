@@ -3,8 +3,7 @@ package infrastructure.rest.student
 import cats.effect.Sync
 import cats.implicits._
 import core.domain.EmailInUse
-import core.usecases.{CreateStudent, StudentService}
-import io.circe.Json
+import core.usecases.{CreateStudentCommand, StudentService}
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityCodec._
@@ -18,7 +17,9 @@ class StudentRoutes[F[_]: Sync](studentService: StudentService[F]) extends Http4
       req.decode[CreateStudentRequest]{
         studentRequest => CreateStudentRequest.validator.validate(studentRequest) match {
           case Some(errors) => BadRequest(errors)
-          case None => studentService.create(CreateStudent(studentRequest.name, studentRequest.email))
+          case None =>
+            studentService
+              .create(CreateStudentCommand(studentRequest.name, studentRequest.email))
               .flatMap(stdId => Created(CreateStudentResponse(stdId.value)))
               .handleErrorWith {
                 case EmailInUse(e) => Conflict(ErrorMessage("Email-In-Use", s"${e.value} is already used by another user"))

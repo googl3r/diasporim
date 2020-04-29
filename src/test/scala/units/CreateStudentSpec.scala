@@ -2,7 +2,7 @@ package units
 
 import cats.effect.IO
 import core.domain.{Email, EmailInUse, EmailInvalidError, NameInvalidError, Student, StudentId, StudentRepository}
-import core.usecases.{CreateStudent, StudentService}
+import core.usecases.{CreateStudentCommand, StudentService}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -18,7 +18,7 @@ class CreateStudentSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll
       val studentService = new StudentService(studentRepository)
 
           "when student name is invalid" in {
-            val studentToCreate = CreateStudent(invalidName, email)
+            val studentToCreate = CreateStudentCommand(invalidName, email)
 
             studentService.create(studentToCreate)
               .attempt
@@ -29,7 +29,7 @@ class CreateStudentSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll
           }
 
           "when student email is invalid" in {
-            val studentToCreate = CreateStudent(name, invalidEmail)
+            val studentToCreate = CreateStudentCommand(name, invalidEmail)
 
             studentService.create(studentToCreate)
               .attempt
@@ -42,7 +42,7 @@ class CreateStudentSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll
     }
 
     "shouldn't create a student with an email in use" in {
-      val studentToCreate = CreateStudent(name, email)
+      val studentToCreate = CreateStudentCommand(name, email)
       val studentRepository: StudentRepository[IO] = new StudentTestRepository {
         override def findByEmail(email: Email): IO[Option[Student]] = IO.pure(Student.createStudent("123", name, email.value).toOption)
       }
@@ -60,7 +60,7 @@ class CreateStudentSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll
       val studentRepository = new StudentTestRepository {
         override def create(student: Student): IO[StudentId] = IO.pure(StudentId.fromString("123").toOption.get)
       }
-      val studentToCreate = CreateStudent(name, email)
+      val studentToCreate = CreateStudentCommand(name, email)
       val studentService = new StudentService(studentRepository)
 
       studentService.create(studentToCreate)
